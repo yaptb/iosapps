@@ -129,31 +129,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
 
           // Navigation buttons
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Back button
-                if (_currentPage > 0)
-                  TextButton.icon(
-                    onPressed: _previousPage,
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back'),
-                  )
-                else
-                  const SizedBox(width: 100),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Back button
+                  if (_currentPage > 0)
+                    TextButton.icon(
+                      onPressed: _previousPage,
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Back'),
+                    )
+                  else
+                    const SizedBox(width: 100),
 
-                // Next button (hidden on last page, handled by completion page)
-                if (_currentPage < _totalPages - 1)
-                  ElevatedButton.icon(
-                    onPressed: _nextPage,
-                    icon: const Icon(Icons.arrow_forward),
-                    label: const Text('Next'),
-                  )
-                else
-                  const SizedBox(width: 100),
-              ],
+                  // Next button (hidden on last page, handled by completion page)
+                  if (_currentPage < _totalPages - 1)
+                    ElevatedButton.icon(
+                      onPressed: _nextPage,
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Next'),
+                    )
+                  else
+                    const SizedBox(width: 100),
+                ],
+              ),
             ),
           ),
         ],

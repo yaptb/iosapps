@@ -17,11 +17,10 @@ class WelcomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // TODO: Add app logo/icon here
-          Icon(
-            Icons.check_circle_outline,
-            size: 120,
-            color: Theme.of(context).colorScheme.primary,
+          Image.asset(
+            'assets/images/check_mark_icon.png',
+            width: 120,
+            height: 120,
           ),
           const SizedBox(height: 32),
 
