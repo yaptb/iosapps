@@ -84,12 +84,8 @@ class LocalNotificationService implements INotificationService {
       final iosPlugin = _plugin.resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>();
       if (iosPlugin != null) {
-        final granted = await iosPlugin.requestPermissions(
-          alert: false,
-          badge: false,
-          sound: false,
-        );
-        return granted ?? false;
+        final options = await iosPlugin.checkPermissions();
+        return options?.isEnabled ?? false;
       }
 
       // Check Android permissions (API 33+)

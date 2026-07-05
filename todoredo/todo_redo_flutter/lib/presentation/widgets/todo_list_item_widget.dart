@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/todo_list.dart';
+import 'todo_list_options.dart';
 
 class TodoListItemWidget extends StatelessWidget {
   final TodoList todoList;
@@ -76,18 +77,6 @@ class TodoListItemWidget extends StatelessWidget {
 
   IconData _getIconData(String? iconName) {
     if (iconName == null) return Icons.list;
-
-    final iconMap = {
-      'home': Icons.home,
-      'work': Icons.work,
-      'shopping': Icons.shopping_cart,
-      'personal': Icons.person,
-      'fitness': Icons.fitness_center,
-      'study': Icons.school,
-      'travel': Icons.flight,
-      'food': Icons.restaurant,
-    };
-
-    return iconMap[iconName] ?? Icons.list;
+    return todoListIconOptions[iconName] ?? Icons.list;
   }
 }

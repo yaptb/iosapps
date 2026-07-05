@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'infrastructure/config/app_launch_tracker.dart';
 import 'infrastructure/config/debug_config.dart';
+import 'infrastructure/config/theme_mode_controller.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/todo_lists_screen.dart';
 
@@ -13,6 +15,8 @@ void main() async {
   // Initialize timezone database for notifications
   tz.initializeTimeZones();
 
+  await AppLaunchTracker.trackLaunchAndMaybeRequestReview();
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -20,17 +24,27 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       title: 'TodoRedo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      themeMode: themeMode,
       home: const AppInitializer(),
       routes: {
         '/home': (context) => const TodoListsScreen(),

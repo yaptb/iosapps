@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/welcome_page.dart';
+import 'pages/theme_selection_page.dart';
 import 'pages/permissions_info_page.dart';
 import 'pages/permissions_request_page.dart';
 import 'pages/completion_page.dart';
@@ -20,7 +21,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  static const int _totalPages = 4;
+  static const int _totalPages = 5;
 
   @override
   void dispose() {
@@ -121,6 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               onPageChanged: _onPageChanged,
               children: [
                 WelcomePage(onNext: _nextPage),
+                ThemeSelectionPage(onNext: _nextPage),
                 PermissionsInfoPage(onNext: _nextPage),
                 PermissionsRequestPage(onNext: _nextPage),
                 CompletionPage(onComplete: _completeOnboarding),

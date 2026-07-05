@@ -44,32 +44,6 @@ class PermissionsInfoPage extends StatelessWidget {
 
           // TODO: Add more permissions here if needed in the future
           // Example: Calendar, Contacts, etc.
-
-          const Spacer(),
-
-          // Info note
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'You can change these permissions later in your device settings.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

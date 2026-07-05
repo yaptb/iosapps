@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/todo_list.dart';
 import '../../infrastructure/dependency_injection.dart';
+import '../widgets/todo_list_options.dart';
 
 class TodoListFormScreen extends ConsumerStatefulWidget {
   final TodoList? todoList;
@@ -17,28 +18,6 @@ class _TodoListFormScreenState extends ConsumerState<TodoListFormScreen> {
   late TextEditingController _nameController;
   Color? _selectedColor;
   String? _selectedIcon;
-
-  final List<Color> _availableColors = [
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.orange,
-    Colors.purple,
-    Colors.teal,
-    Colors.pink,
-    Colors.amber,
-  ];
-
-  final Map<String, IconData> _availableIcons = {
-    'home': Icons.home,
-    'work': Icons.work,
-    'shopping': Icons.shopping_cart,
-    'personal': Icons.person,
-    'fitness': Icons.fitness_center,
-    'study': Icons.school,
-    'travel': Icons.flight,
-    'food': Icons.restaurant,
-  };
 
   @override
   void initState() {
@@ -128,7 +107,7 @@ class _TodoListFormScreenState extends ConsumerState<TodoListFormScreen> {
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: _availableColors.map((color) {
+              children: todoListColorOptions.map((color) {
                 final isSelected = _selectedColor == color;
                 return GestureDetector(
                   onTap: () {
@@ -163,7 +142,7 @@ class _TodoListFormScreenState extends ConsumerState<TodoListFormScreen> {
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: _availableIcons.entries.map((entry) {
+              children: todoListIconOptions.entries.map((entry) {
                 final isSelected = _selectedIcon == entry.key;
                 return GestureDetector(
                   onTap: () {

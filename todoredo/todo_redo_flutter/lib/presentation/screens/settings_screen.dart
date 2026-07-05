@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../infrastructure/config/theme_mode_controller.dart';
+import '../widgets/theme_mode_selector.dart';
+import 'notification_settings_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -69,19 +72,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildPreferencesSection() {
+    final themeMode = ref.watch(themeModeProvider);
+
     return Column(
       children: [
         ListTile(
           leading: const Icon(Icons.palette),
           title: const Text('Theme'),
-          subtitle: const Text('Light'),
+          subtitle: Text(_themeModeLabel(themeMode)),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            // TODO: Implement theme settings
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Theme settings coming soon')),
-            );
-          },
+          onTap: () => _showThemePicker(themeMode),
         ),
         ListTile(
           leading: const Icon(Icons.notifications),
@@ -89,9 +89,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           subtitle: const Text('Manage reminder notifications'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () {
-            // TODO: Implement notification settings
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Notification settings coming soon')),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationSettingsScreen(),
+              ),
             );
           },
         ),
@@ -146,4 +148,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  String _themeModeLabel(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+      case ThemeMode.system:
+        return 'System';
+    }
+  }
+
+  void _showThemePicker(ThemeMode current) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choose Theme'),
+        content: ThemeModeSelector(
+          value: current,
+          onChanged: (mode) {
+            ref.read(themeModeProvider.notifier).setThemeMode(mode);
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
 }
