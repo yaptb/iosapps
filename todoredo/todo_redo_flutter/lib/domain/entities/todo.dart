@@ -10,6 +10,7 @@ class Todo {
   final bool reminderEnabled;
   final int? reminderOffset;
   final String? reminderUnit;
+  final int? reminderTimeMinutes;
   final bool recurrenceEnabled;
   final int? recurrenceInterval;
   final String? recurrenceUnit;
@@ -37,6 +38,7 @@ class Todo {
     required this.reminderEnabled,
     this.reminderOffset,
     this.reminderUnit,
+    this.reminderTimeMinutes,
     required this.recurrenceEnabled,
     this.recurrenceInterval,
     this.recurrenceUnit,
@@ -61,6 +63,7 @@ class Todo {
     bool? reminderEnabled,
     int? reminderOffset,
     String? reminderUnit,
+    int? reminderTimeMinutes,
     bool? recurrenceEnabled,
     int? recurrenceInterval,
     String? recurrenceUnit,
@@ -84,6 +87,7 @@ class Todo {
       reminderEnabled: reminderEnabled ?? this.reminderEnabled,
       reminderOffset: reminderOffset ?? this.reminderOffset,
       reminderUnit: reminderUnit ?? this.reminderUnit,
+      reminderTimeMinutes: reminderTimeMinutes ?? this.reminderTimeMinutes,
       recurrenceEnabled: recurrenceEnabled ?? this.recurrenceEnabled,
       recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
       recurrenceUnit: recurrenceUnit ?? this.recurrenceUnit,
@@ -123,6 +127,7 @@ class Todo {
       'reminderEnabled': reminderEnabled,
       'reminderOffset': reminderOffset,
       'reminderUnit': reminderUnit,
+      'reminderTimeMinutes': reminderTimeMinutes,
       'recurrenceEnabled': recurrenceEnabled,
       'recurrenceInterval': recurrenceInterval,
       'recurrenceUnit': recurrenceUnit,
@@ -153,6 +158,7 @@ class Todo {
       reminderEnabled: map['reminderEnabled'] as bool? ?? false,
       reminderOffset: map['reminderOffset'] as int?,
       reminderUnit: map['reminderUnit'] as String?,
+      reminderTimeMinutes: map['reminderTimeMinutes'] as int?,
       recurrenceEnabled: map['recurrenceEnabled'] as bool? ?? false,
       recurrenceInterval: map['recurrenceInterval'] as int?,
       recurrenceUnit: map['recurrenceUnit'] as String?,

@@ -22,6 +22,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
   bool _reminderEnabled = false;
   int _reminderOffset = 1;
   String _reminderUnit = 'days';
+  int _reminderTimeMinutes = 9 * 60;
   bool _recurrenceEnabled = false;
   int _recurrenceInterval = 1;
   String _recurrenceUnit = 'days';
@@ -35,6 +36,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
     _reminderEnabled = widget.todo?.reminderEnabled ?? false;
     _reminderOffset = widget.todo?.reminderOffset ?? 1;
     _reminderUnit = widget.todo?.reminderUnit ?? 'days';
+    _reminderTimeMinutes = widget.todo?.reminderTimeMinutes ?? 9 * 60;
     _recurrenceEnabled = widget.todo?.recurrenceEnabled ?? false;
     _recurrenceInterval = widget.todo?.recurrenceInterval ?? 1;
     _recurrenceUnit = widget.todo?.recurrenceUnit ?? 'days';
@@ -72,6 +74,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
           reminderEnabled: _reminderEnabled,
           reminderOffset: _reminderOffset,
           reminderUnit: _reminderUnit,
+          reminderTimeMinutes: _reminderTimeMinutes,
           recurrenceEnabled: _recurrenceEnabled,
           recurrenceInterval: _recurrenceInterval,
           recurrenceUnit: _recurrenceUnit,
@@ -87,6 +90,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
           reminderEnabled: _reminderEnabled,
           reminderOffset: _reminderOffset,
           reminderUnit: _reminderUnit,
+          reminderTimeMinutes: _reminderTimeMinutes,
           recurrenceEnabled: _recurrenceEnabled,
           recurrenceInterval: _recurrenceInterval,
           recurrenceUnit: _recurrenceUnit,
@@ -129,6 +133,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
           date,
           _reminderOffset,
           _reminderUnit,
+          _reminderTimeMinutes,
         );
 
         if (newReminderTime != null && !reminderService.isReminderValid(newReminderTime)) {
@@ -172,6 +177,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
     bool tempEnabled = _reminderEnabled;
     int tempOffset = _reminderOffset;
     String tempUnit = _reminderUnit;
+    int tempTimeMinutes = _reminderTimeMinutes;
 
     showDialog(
       context: context,
@@ -183,6 +189,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
             _dueDate,
             tempOffset,
             tempUnit,
+            tempTimeMinutes,
           );
           final isValid = reminderTime != null &&
                          reminderService.isReminderValid(reminderTime);
@@ -260,8 +267,47 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'before due date',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
                     ),
+                    if (tempUnit != 'hours') ...[
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'At time',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.access_time, size: 18),
+                            label: Text(
+                              TimeOfDay(
+                                hour: tempTimeMinutes ~/ 60,
+                                minute: tempTimeMinutes % 60,
+                              ).format(context),
+                            ),
+                            onPressed: () async {
+                              final picked = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay(
+                                  hour: tempTimeMinutes ~/ 60,
+                                  minute: tempTimeMinutes % 60,
+                                ),
+                              );
+                              if (picked != null) {
+                                setDialogState(() {
+                                  tempTimeMinutes = picked.hour * 60 + picked.minute;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                     if (tempEnabled && reminderTime != null) ...[
                       const SizedBox(height: 16),
                       Container(
@@ -313,6 +359,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                           _reminderEnabled = tempEnabled;
                           _reminderOffset = tempOffset;
                           _reminderUnit = tempUnit;
+                          _reminderTimeMinutes = tempTimeMinutes;
                         });
                         Navigator.pop(context);
                       },
@@ -472,6 +519,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
       _dueDate,
       _reminderOffset,
       _reminderUnit,
+      _reminderTimeMinutes,
     );
     if (reminderTime != null) {
       return Text(
@@ -565,12 +613,12 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
               child: ListTile(
                 leading: Icon(
                   Icons.notifications,
-                  color: _dueDate == null ? Colors.grey : null,
+                  color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                 ),
                 title: Text(
                   'Reminder',
                   style: TextStyle(
-                    color: _dueDate == null ? Colors.grey : null,
+                    color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                   ),
                 ),
                 subtitle: _buildReminderSubtitle(),
@@ -583,12 +631,12 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
               child: ListTile(
                 leading: Icon(
                   Icons.repeat,
-                  color: _dueDate == null ? Colors.grey : null,
+                  color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                 ),
                 title: Text(
                   'Recurrence',
                   style: TextStyle(
-                    color: _dueDate == null ? Colors.grey : null,
+                    color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                   ),
                 ),
                 subtitle: _buildRecurrenceSubtitle(),

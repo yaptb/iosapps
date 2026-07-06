@@ -69,9 +69,7 @@ class _PermissionsRequestPageState extends ConsumerState<PermissionsRequestPage>
             _permissionsGranted
                 ? 'Permissions Granted!'
                 : 'Grant Permissions',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

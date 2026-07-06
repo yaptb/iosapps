@@ -63,7 +63,10 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                     ? 'No todos in this list yet!\nTap + to create one'
                     : 'No incomplete todos!\nTap the eye icon to show completed',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             );
           }

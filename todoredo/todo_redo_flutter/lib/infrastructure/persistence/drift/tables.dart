@@ -33,6 +33,7 @@ class Todos extends Table {
   BoolColumn get reminderEnabled => boolean().withDefault(const Constant(false))();
   IntColumn get reminderOffset => integer().nullable()();
   TextColumn get reminderUnit => text().nullable()();
+  IntColumn get reminderTimeMinutes => integer().nullable()();
   BoolColumn get recurrenceEnabled => boolean().withDefault(const Constant(false))();
   IntColumn get recurrenceInterval => integer().nullable()();
   TextColumn get recurrenceUnit => text().nullable()();

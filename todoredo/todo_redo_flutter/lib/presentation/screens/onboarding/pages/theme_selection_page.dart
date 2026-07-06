@@ -24,9 +24,7 @@ class ThemeSelectionPage extends ConsumerWidget {
           // Title
           Text(
             'Choose Your Look',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 16),
 

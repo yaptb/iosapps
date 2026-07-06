@@ -11,25 +11,40 @@ class ReminderService {
 
   ReminderService(this._reminderRepository, this._notificationService);
 
+  /// Default reminder time-of-day (9:00 AM), used whenever a day/week/month/
+  /// year-based reminder has no explicit time-of-day set.
+  static const int defaultReminderTimeMinutes = 9 * 60;
+
   /// Calculate the absolute reminder time based on due date and offset
+  ///
+  /// [reminderTimeMinutes] (minutes since midnight) overrides the time-of-day
+  /// for day/week/month/year-based offsets, defaulting to 9:00 AM if not
+  /// provided. It has no effect on 'hours' offsets, which stay a pure
+  /// relative offset from the due date/time.
   DateTime? calculateReminderTime(
     DateTime? dueDate,
     int? reminderOffset,
-    String? reminderUnit,
-  ) {
+    String? reminderUnit, [
+    int? reminderTimeMinutes,
+  ]) {
     if (dueDate == null || reminderOffset == null || reminderUnit == null) {
       return null;
     }
 
-    switch (reminderUnit.toLowerCase()) {
+    final unit = reminderUnit.toLowerCase();
+
+    DateTime? result;
+    switch (unit) {
       case 'hours':
         return dueDate.subtract(Duration(hours: reminderOffset));
       case 'days':
-        return dueDate.subtract(Duration(days: reminderOffset));
+        result = dueDate.subtract(Duration(days: reminderOffset));
+        break;
       case 'weeks':
-        return dueDate.subtract(Duration(days: reminderOffset * 7));
+        result = dueDate.subtract(Duration(days: reminderOffset * 7));
+        break;
       case 'months':
-        return DateTime(
+        result = DateTime(
           dueDate.year,
           dueDate.month - reminderOffset,
           dueDate.day,
@@ -37,8 +52,9 @@ class ReminderService {
           dueDate.minute,
           dueDate.second,
         );
+        break;
       case 'years':
-        return DateTime(
+        result = DateTime(
           dueDate.year - reminderOffset,
           dueDate.month,
           dueDate.day,
@@ -46,9 +62,19 @@ class ReminderService {
           dueDate.minute,
           dueDate.second,
         );
+        break;
       default:
         return null;
     }
+
+    final minutes = reminderTimeMinutes ?? defaultReminderTimeMinutes;
+    return DateTime(
+      result.year,
+      result.month,
+      result.day,
+      minutes ~/ 60,
+      minutes % 60,
+    );
   }
 
   /// Validate that the reminder time is in the future
@@ -79,6 +105,7 @@ class ReminderService {
       todo.dueDate,
       todo.reminderOffset,
       todo.reminderUnit,
+      todo.reminderTimeMinutes,
     );
 
     // If reminder time is invalid or in the past, don't create it

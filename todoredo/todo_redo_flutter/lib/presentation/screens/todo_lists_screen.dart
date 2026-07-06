@@ -48,11 +48,14 @@ class TodoListsScreen extends ConsumerWidget {
           final lists = snapshot.data ?? [];
 
           if (lists.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'No lists yet!\nTap + to create one',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             );
           }

@@ -10,7 +10,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -38,6 +38,10 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(todos, todos.recurrenceEnabled);
             await m.addColumn(todos, todos.recurrenceInterval);
             await m.addColumn(todos, todos.recurrenceUnit);
+          }
+          if (from <= 4) {
+            // Upgrading from version 4 to 5: Add reminder time-of-day field
+            await m.addColumn(todos, todos.reminderTimeMinutes);
           }
         },
       );

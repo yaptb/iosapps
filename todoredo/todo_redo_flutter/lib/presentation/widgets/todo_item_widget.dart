@@ -33,7 +33,9 @@ class TodoItemWidget extends StatelessWidget {
                 child: Icon(
                   Icons.repeat,
                   size: 16,
-                  color: todo.isCompleted ? Colors.grey : Theme.of(context).primaryColor,
+                  color: todo.isCompleted
+                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                      : Theme.of(context).primaryColor,
                 ),
               ),
             Expanded(
@@ -41,7 +43,9 @@ class TodoItemWidget extends StatelessWidget {
                 todo.title,
                 style: TextStyle(
                   decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
-                  color: todo.isCompleted ? Colors.grey : null,
+                  color: todo.isCompleted
+                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                      : null,
                 ),
               ),
             ),

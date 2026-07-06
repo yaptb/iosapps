@@ -28,9 +28,7 @@ class CompletionPage extends StatelessWidget {
           // Title
           Text(
             'You\'re All Set!',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

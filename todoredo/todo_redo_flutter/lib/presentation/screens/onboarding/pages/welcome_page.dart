@@ -27,9 +27,7 @@ class WelcomePage extends StatelessWidget {
           // Title
           Text(
             'Welcome to TodoRedo',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

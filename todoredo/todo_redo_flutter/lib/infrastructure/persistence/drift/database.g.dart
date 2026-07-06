@@ -797,6 +797,16 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _reminderTimeMinutesMeta =
+      const VerificationMeta('reminderTimeMinutes');
+  @override
+  late final GeneratedColumn<int> reminderTimeMinutes = GeneratedColumn<int>(
+    'reminder_time_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _recurrenceEnabledMeta = const VerificationMeta(
     'recurrenceEnabled',
   );
@@ -929,6 +939,7 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
     reminderEnabled,
     reminderOffset,
     reminderUnit,
+    reminderTimeMinutes,
     recurrenceEnabled,
     recurrenceInterval,
     recurrenceUnit,
@@ -1038,6 +1049,15 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
         reminderUnit.isAcceptableOrUnknown(
           data['reminder_unit']!,
           _reminderUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_time_minutes')) {
+      context.handle(
+        _reminderTimeMinutesMeta,
+        reminderTimeMinutes.isAcceptableOrUnknown(
+          data['reminder_time_minutes']!,
+          _reminderTimeMinutesMeta,
         ),
       );
     }
@@ -1169,6 +1189,10 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
         DriftSqlType.string,
         data['${effectivePrefix}reminder_unit'],
       ),
+      reminderTimeMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_time_minutes'],
+      ),
       recurrenceEnabled: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}recurrence_enabled'],
@@ -1230,6 +1254,7 @@ class Todo extends DataClass implements Insertable<Todo> {
   final bool reminderEnabled;
   final int? reminderOffset;
   final String? reminderUnit;
+  final int? reminderTimeMinutes;
   final bool recurrenceEnabled;
   final int? recurrenceInterval;
   final String? recurrenceUnit;
@@ -1252,6 +1277,7 @@ class Todo extends DataClass implements Insertable<Todo> {
     required this.reminderEnabled,
     this.reminderOffset,
     this.reminderUnit,
+    this.reminderTimeMinutes,
     required this.recurrenceEnabled,
     this.recurrenceInterval,
     this.recurrenceUnit,
@@ -1286,6 +1312,9 @@ class Todo extends DataClass implements Insertable<Todo> {
     }
     if (!nullToAbsent || reminderUnit != null) {
       map['reminder_unit'] = Variable<String>(reminderUnit);
+    }
+    if (!nullToAbsent || reminderTimeMinutes != null) {
+      map['reminder_time_minutes'] = Variable<int>(reminderTimeMinutes);
     }
     map['recurrence_enabled'] = Variable<bool>(recurrenceEnabled);
     if (!nullToAbsent || recurrenceInterval != null) {
@@ -1337,6 +1366,9 @@ class Todo extends DataClass implements Insertable<Todo> {
       reminderUnit: reminderUnit == null && nullToAbsent
           ? const Value.absent()
           : Value(reminderUnit),
+      reminderTimeMinutes: reminderTimeMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderTimeMinutes),
       recurrenceEnabled: Value(recurrenceEnabled),
       recurrenceInterval: recurrenceInterval == null && nullToAbsent
           ? const Value.absent()
@@ -1381,6 +1413,9 @@ class Todo extends DataClass implements Insertable<Todo> {
       reminderEnabled: serializer.fromJson<bool>(json['reminderEnabled']),
       reminderOffset: serializer.fromJson<int?>(json['reminderOffset']),
       reminderUnit: serializer.fromJson<String?>(json['reminderUnit']),
+      reminderTimeMinutes: serializer.fromJson<int?>(
+        json['reminderTimeMinutes'],
+      ),
       recurrenceEnabled: serializer.fromJson<bool>(json['recurrenceEnabled']),
       recurrenceInterval: serializer.fromJson<int?>(json['recurrenceInterval']),
       recurrenceUnit: serializer.fromJson<String?>(json['recurrenceUnit']),
@@ -1408,6 +1443,7 @@ class Todo extends DataClass implements Insertable<Todo> {
       'reminderEnabled': serializer.toJson<bool>(reminderEnabled),
       'reminderOffset': serializer.toJson<int?>(reminderOffset),
       'reminderUnit': serializer.toJson<String?>(reminderUnit),
+      'reminderTimeMinutes': serializer.toJson<int?>(reminderTimeMinutes),
       'recurrenceEnabled': serializer.toJson<bool>(recurrenceEnabled),
       'recurrenceInterval': serializer.toJson<int?>(recurrenceInterval),
       'recurrenceUnit': serializer.toJson<String?>(recurrenceUnit),
@@ -1433,6 +1469,7 @@ class Todo extends DataClass implements Insertable<Todo> {
     bool? reminderEnabled,
     Value<int?> reminderOffset = const Value.absent(),
     Value<String?> reminderUnit = const Value.absent(),
+    Value<int?> reminderTimeMinutes = const Value.absent(),
     bool? recurrenceEnabled,
     Value<int?> recurrenceInterval = const Value.absent(),
     Value<String?> recurrenceUnit = const Value.absent(),
@@ -1457,6 +1494,9 @@ class Todo extends DataClass implements Insertable<Todo> {
         ? reminderOffset.value
         : this.reminderOffset,
     reminderUnit: reminderUnit.present ? reminderUnit.value : this.reminderUnit,
+    reminderTimeMinutes: reminderTimeMinutes.present
+        ? reminderTimeMinutes.value
+        : this.reminderTimeMinutes,
     recurrenceEnabled: recurrenceEnabled ?? this.recurrenceEnabled,
     recurrenceInterval: recurrenceInterval.present
         ? recurrenceInterval.value
@@ -1499,6 +1539,9 @@ class Todo extends DataClass implements Insertable<Todo> {
       reminderUnit: data.reminderUnit.present
           ? data.reminderUnit.value
           : this.reminderUnit,
+      reminderTimeMinutes: data.reminderTimeMinutes.present
+          ? data.reminderTimeMinutes.value
+          : this.reminderTimeMinutes,
       recurrenceEnabled: data.recurrenceEnabled.present
           ? data.recurrenceEnabled.value
           : this.recurrenceEnabled,
@@ -1536,6 +1579,7 @@ class Todo extends DataClass implements Insertable<Todo> {
           ..write('reminderEnabled: $reminderEnabled, ')
           ..write('reminderOffset: $reminderOffset, ')
           ..write('reminderUnit: $reminderUnit, ')
+          ..write('reminderTimeMinutes: $reminderTimeMinutes, ')
           ..write('recurrenceEnabled: $recurrenceEnabled, ')
           ..write('recurrenceInterval: $recurrenceInterval, ')
           ..write('recurrenceUnit: $recurrenceUnit, ')
@@ -1563,6 +1607,7 @@ class Todo extends DataClass implements Insertable<Todo> {
     reminderEnabled,
     reminderOffset,
     reminderUnit,
+    reminderTimeMinutes,
     recurrenceEnabled,
     recurrenceInterval,
     recurrenceUnit,
@@ -1589,6 +1634,7 @@ class Todo extends DataClass implements Insertable<Todo> {
           other.reminderEnabled == this.reminderEnabled &&
           other.reminderOffset == this.reminderOffset &&
           other.reminderUnit == this.reminderUnit &&
+          other.reminderTimeMinutes == this.reminderTimeMinutes &&
           other.recurrenceEnabled == this.recurrenceEnabled &&
           other.recurrenceInterval == this.recurrenceInterval &&
           other.recurrenceUnit == this.recurrenceUnit &&
@@ -1613,6 +1659,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
   final Value<bool> reminderEnabled;
   final Value<int?> reminderOffset;
   final Value<String?> reminderUnit;
+  final Value<int?> reminderTimeMinutes;
   final Value<bool> recurrenceEnabled;
   final Value<int?> recurrenceInterval;
   final Value<String?> recurrenceUnit;
@@ -1636,6 +1683,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     this.reminderEnabled = const Value.absent(),
     this.reminderOffset = const Value.absent(),
     this.reminderUnit = const Value.absent(),
+    this.reminderTimeMinutes = const Value.absent(),
     this.recurrenceEnabled = const Value.absent(),
     this.recurrenceInterval = const Value.absent(),
     this.recurrenceUnit = const Value.absent(),
@@ -1660,6 +1708,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     this.reminderEnabled = const Value.absent(),
     this.reminderOffset = const Value.absent(),
     this.reminderUnit = const Value.absent(),
+    this.reminderTimeMinutes = const Value.absent(),
     this.recurrenceEnabled = const Value.absent(),
     this.recurrenceInterval = const Value.absent(),
     this.recurrenceUnit = const Value.absent(),
@@ -1687,6 +1736,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     Expression<bool>? reminderEnabled,
     Expression<int>? reminderOffset,
     Expression<String>? reminderUnit,
+    Expression<int>? reminderTimeMinutes,
     Expression<bool>? recurrenceEnabled,
     Expression<int>? recurrenceInterval,
     Expression<String>? recurrenceUnit,
@@ -1711,6 +1761,8 @@ class TodosCompanion extends UpdateCompanion<Todo> {
       if (reminderEnabled != null) 'reminder_enabled': reminderEnabled,
       if (reminderOffset != null) 'reminder_offset': reminderOffset,
       if (reminderUnit != null) 'reminder_unit': reminderUnit,
+      if (reminderTimeMinutes != null)
+        'reminder_time_minutes': reminderTimeMinutes,
       if (recurrenceEnabled != null) 'recurrence_enabled': recurrenceEnabled,
       if (recurrenceInterval != null) 'recurrence_interval': recurrenceInterval,
       if (recurrenceUnit != null) 'recurrence_unit': recurrenceUnit,
@@ -1737,6 +1789,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     Value<bool>? reminderEnabled,
     Value<int?>? reminderOffset,
     Value<String?>? reminderUnit,
+    Value<int?>? reminderTimeMinutes,
     Value<bool>? recurrenceEnabled,
     Value<int?>? recurrenceInterval,
     Value<String?>? recurrenceUnit,
@@ -1761,6 +1814,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
       reminderEnabled: reminderEnabled ?? this.reminderEnabled,
       reminderOffset: reminderOffset ?? this.reminderOffset,
       reminderUnit: reminderUnit ?? this.reminderUnit,
+      reminderTimeMinutes: reminderTimeMinutes ?? this.reminderTimeMinutes,
       recurrenceEnabled: recurrenceEnabled ?? this.recurrenceEnabled,
       recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
       recurrenceUnit: recurrenceUnit ?? this.recurrenceUnit,
@@ -1810,6 +1864,9 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     }
     if (reminderUnit.present) {
       map['reminder_unit'] = Variable<String>(reminderUnit.value);
+    }
+    if (reminderTimeMinutes.present) {
+      map['reminder_time_minutes'] = Variable<int>(reminderTimeMinutes.value);
     }
     if (recurrenceEnabled.present) {
       map['recurrence_enabled'] = Variable<bool>(recurrenceEnabled.value);
@@ -1861,6 +1918,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
           ..write('reminderEnabled: $reminderEnabled, ')
           ..write('reminderOffset: $reminderOffset, ')
           ..write('reminderUnit: $reminderUnit, ')
+          ..write('reminderTimeMinutes: $reminderTimeMinutes, ')
           ..write('recurrenceEnabled: $recurrenceEnabled, ')
           ..write('recurrenceInterval: $recurrenceInterval, ')
           ..write('recurrenceUnit: $recurrenceUnit, ')
@@ -3051,6 +3109,7 @@ typedef $$TodosTableCreateCompanionBuilder =
       Value<bool> reminderEnabled,
       Value<int?> reminderOffset,
       Value<String?> reminderUnit,
+      Value<int?> reminderTimeMinutes,
       Value<bool> recurrenceEnabled,
       Value<int?> recurrenceInterval,
       Value<String?> recurrenceUnit,
@@ -3076,6 +3135,7 @@ typedef $$TodosTableUpdateCompanionBuilder =
       Value<bool> reminderEnabled,
       Value<int?> reminderOffset,
       Value<String?> reminderUnit,
+      Value<int?> reminderTimeMinutes,
       Value<bool> recurrenceEnabled,
       Value<int?> recurrenceInterval,
       Value<String?> recurrenceUnit,
@@ -3149,6 +3209,11 @@ class $$TodosTableFilterComposer extends Composer<_$AppDatabase, $TodosTable> {
 
   ColumnFilters<String> get reminderUnit => $composableBuilder(
     column: $table.reminderUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderTimeMinutes => $composableBuilder(
+    column: $table.reminderTimeMinutes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3267,6 +3332,11 @@ class $$TodosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get reminderTimeMinutes => $composableBuilder(
+    column: $table.reminderTimeMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get recurrenceEnabled => $composableBuilder(
     column: $table.recurrenceEnabled,
     builder: (column) => ColumnOrderings(column),
@@ -3372,6 +3442,11 @@ class $$TodosTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get reminderTimeMinutes => $composableBuilder(
+    column: $table.reminderTimeMinutes,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get recurrenceEnabled => $composableBuilder(
     column: $table.recurrenceEnabled,
     builder: (column) => column,
@@ -3452,6 +3527,7 @@ class $$TodosTableTableManager
                 Value<bool> reminderEnabled = const Value.absent(),
                 Value<int?> reminderOffset = const Value.absent(),
                 Value<String?> reminderUnit = const Value.absent(),
+                Value<int?> reminderTimeMinutes = const Value.absent(),
                 Value<bool> recurrenceEnabled = const Value.absent(),
                 Value<int?> recurrenceInterval = const Value.absent(),
                 Value<String?> recurrenceUnit = const Value.absent(),
@@ -3475,6 +3551,7 @@ class $$TodosTableTableManager
                 reminderEnabled: reminderEnabled,
                 reminderOffset: reminderOffset,
                 reminderUnit: reminderUnit,
+                reminderTimeMinutes: reminderTimeMinutes,
                 recurrenceEnabled: recurrenceEnabled,
                 recurrenceInterval: recurrenceInterval,
                 recurrenceUnit: recurrenceUnit,
@@ -3500,6 +3577,7 @@ class $$TodosTableTableManager
                 Value<bool> reminderEnabled = const Value.absent(),
                 Value<int?> reminderOffset = const Value.absent(),
                 Value<String?> reminderUnit = const Value.absent(),
+                Value<int?> reminderTimeMinutes = const Value.absent(),
                 Value<bool> recurrenceEnabled = const Value.absent(),
                 Value<int?> recurrenceInterval = const Value.absent(),
                 Value<String?> recurrenceUnit = const Value.absent(),
@@ -3523,6 +3601,7 @@ class $$TodosTableTableManager
                 reminderEnabled: reminderEnabled,
                 reminderOffset: reminderOffset,
                 reminderUnit: reminderUnit,
+                reminderTimeMinutes: reminderTimeMinutes,
                 recurrenceEnabled: recurrenceEnabled,
                 recurrenceInterval: recurrenceInterval,
                 recurrenceUnit: recurrenceUnit,

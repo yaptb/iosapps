@@ -12,29 +12,26 @@ class ThemeModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RadioGroup<ThemeMode>(
-      groupValue: value,
-      onChanged: (mode) => onChanged(mode!),
-      child: const Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.system,
-            secondary: Icon(Icons.brightness_auto),
-            title: Text('System'),
-          ),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.light,
-            secondary: Icon(Icons.light_mode),
-            title: Text('Light'),
-          ),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.dark,
-            secondary: Icon(Icons.dark_mode),
-            title: Text('Dark'),
-          ),
-        ],
-      ),
+    return SegmentedButton<ThemeMode>(
+      segments: const [
+        ButtonSegment(
+          value: ThemeMode.system,
+          label: Text('System'),
+          icon: Icon(Icons.brightness_auto),
+        ),
+        ButtonSegment(
+          value: ThemeMode.light,
+          label: Text('Light'),
+          icon: Icon(Icons.light_mode),
+        ),
+        ButtonSegment(
+          value: ThemeMode.dark,
+          label: Text('Dark'),
+          icon: Icon(Icons.dark_mode),
+        ),
+      ],
+      selected: {value},
+      onSelectionChanged: (selection) => onChanged(selection.first),
     );
   }
 }

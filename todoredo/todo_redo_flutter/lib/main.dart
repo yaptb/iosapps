@@ -7,6 +7,7 @@ import 'infrastructure/config/debug_config.dart';
 import 'infrastructure/config/theme_mode_controller.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/todo_lists_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   // Ensure Flutter binding is initialized
@@ -33,17 +34,8 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       title: 'TodoRedo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       themeMode: themeMode,
       home: const AppInitializer(),
       routes: {
