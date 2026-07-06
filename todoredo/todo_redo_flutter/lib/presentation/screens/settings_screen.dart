@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../infrastructure/config/theme_mode_controller.dart';
-import '../widgets/theme_mode_selector.dart';
 import 'notification_settings_screen.dart';
+import 'theme_settings_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -81,7 +81,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           title: const Text('Theme'),
           subtitle: Text(_themeModeLabel(themeMode)),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () => _showThemePicker(themeMode),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ThemeSettingsScreen(),
+              ),
+            );
+          },
         ),
         ListTile(
           leading: const Icon(Icons.notifications),
@@ -159,19 +166,4 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _showThemePicker(ThemeMode current) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Choose Theme'),
-        content: ThemeModeSelector(
-          value: current,
-          onChanged: (mode) {
-            ref.read(themeModeProvider.notifier).setThemeMode(mode);
-            Navigator.pop(context);
-          },
-        ),
-      ),
-    );
-  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/todo_list.dart';
 import '../../infrastructure/dependency_injection.dart';
 import '../widgets/todo_item_widget.dart';
+import '../widgets/todo_list_options.dart';
 import 'todo_detail_screen.dart';
 
 class TodosScreen extends ConsumerStatefulWidget {
@@ -24,8 +25,16 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.todoList.name),
+        title: Text(
+          widget.todoList.name,
+          style: widget.todoList.color != null
+              ? TextStyle(color: onSwatchColor(widget.todoList.color!))
+              : null,
+        ),
         backgroundColor: widget.todoList.color ?? Theme.of(context).colorScheme.inversePrimary,
+        foregroundColor: widget.todoList.color != null
+            ? onSwatchColor(widget.todoList.color!)
+            : null,
         actions: [
           IconButton(
             icon: Icon(_showCompleted ? Icons.visibility : Icons.visibility_off),

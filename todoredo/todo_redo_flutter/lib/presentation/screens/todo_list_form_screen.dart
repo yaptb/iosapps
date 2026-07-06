@@ -127,7 +127,7 @@ class _TodoListFormScreenState extends ConsumerState<TodoListFormScreen> {
                       ),
                     ),
                     child: isSelected
-                        ? const Icon(Icons.check, color: Colors.white)
+                        ? Icon(Icons.check, color: onSwatchColor(color))
                         : null,
                   ),
                 );
@@ -162,7 +162,7 @@ class _TodoListFormScreenState extends ConsumerState<TodoListFormScreen> {
                     child: Icon(
                       entry.value,
                       color: isSelected
-                          ? Colors.white
+                          ? Theme.of(context).colorScheme.onPrimary
                           : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),

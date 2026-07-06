@@ -126,49 +126,10 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
     );
 
     if (date != null) {
-      // Check if changing the due date would invalidate the reminder
-      if (_reminderEnabled) {
-        final reminderService = ref.read(reminderServiceProvider);
-        final newReminderTime = reminderService.calculateReminderTime(
-          date,
-          _reminderOffset,
-          _reminderUnit,
-          _reminderTimeMinutes,
-        );
-
-        if (newReminderTime != null && !reminderService.isReminderValid(newReminderTime)) {
-          // Show warning dialog
-          final shouldContinue = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Invalid Reminder'),
-              content: const Text(
-                'Changing the due date will make the reminder time invalid (in the past). '
-                'The reminder will be disabled. Do you want to continue?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Continue'),
-                ),
-              ],
-            ),
-          );
-
-          if (shouldContinue == true) {
-            setState(() {
-              _dueDate = date;
-              _reminderEnabled = false;
-            });
-          }
-          return;
-        }
-      }
-
+      // Note: the reminder is kept enabled even if this due date makes it
+      // fall in the past — the reminder subtitle on the main page warns
+      // about this, and the same offset/unit/time will be re-applied
+      // whenever the due date changes again (e.g. on recurrence).
       setState(() => _dueDate = date);
     }
   }
@@ -352,17 +313,15 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: (tempEnabled && !isValid)
-                    ? null
-                    : () {
-                        setState(() {
-                          _reminderEnabled = tempEnabled;
-                          _reminderOffset = tempOffset;
-                          _reminderUnit = tempUnit;
-                          _reminderTimeMinutes = tempTimeMinutes;
-                        });
-                        Navigator.pop(context);
-                      },
+                onPressed: () {
+                  setState(() {
+                    _reminderEnabled = tempEnabled;
+                    _reminderOffset = tempOffset;
+                    _reminderUnit = tempUnit;
+                    _reminderTimeMinutes = tempTimeMinutes;
+                  });
+                  Navigator.pop(context);
+                },
                 child: const Text('Save'),
               ),
             ],
@@ -521,15 +480,47 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
       _reminderUnit,
       _reminderTimeMinutes,
     );
-    if (reminderTime != null) {
-      return Text(
-        'Reminder: ${DateFormat.yMMMd().add_jm().format(reminderTime)}\n($_reminderOffset $_reminderUnit before due date)',
-        style: const TextStyle(fontSize: 12),
+    if (reminderTime == null) {
+      return const Text(
+        'Invalid reminder time',
+        style: TextStyle(fontSize: 12),
       );
     }
-    return const Text(
-      'Invalid reminder time',
-      style: TextStyle(fontSize: 12),
+
+    final detail =
+        'Reminder: ${DateFormat.yMMMd().add_jm().format(reminderTime)}\n($_reminderOffset $_reminderUnit before due date)';
+
+    if (reminderService.isReminderValid(reminderTime)) {
+      return Text(detail, style: const TextStyle(fontSize: 12));
+    }
+
+    // Reminder time has already passed. Still saved (so it can be reused
+    // once this task recurs, or once the due date is updated), but warn
+    // that it won't fire as-is. The warning is appended below the normal
+    // reminder text rather than recoloring it.
+    final warningColor = Theme.of(context).colorScheme.error;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(detail, style: const TextStyle(fontSize: 12)),
+        const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.warning_amber_rounded, size: 14, color: warningColor),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                _recurrenceEnabled
+                    ? 'Reminder is in the past — it will apply next time this task recurs.'
+                    : 'Reminder is in the past and won\'t fire unless you update the due date.',
+                style: TextStyle(fontSize: 12, color: warningColor),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -599,8 +590,11 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                         onPressed: _isLoading ? null : () {
                           setState(() {
                             _dueDate = null;
-                            // Disable recurrence but keep interval/unit for restoration
+                            // Disable recurrence and reminder (both depend on
+                            // a due date) but keep their settings for
+                            // restoration if a due date is set again.
                             _recurrenceEnabled = false;
+                            _reminderEnabled = false;
                           });
                         },
                       )

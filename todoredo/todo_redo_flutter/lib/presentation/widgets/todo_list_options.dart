@@ -21,6 +21,13 @@ const List<Color> todoListColorOptions = [
   Colors.blueGrey,
 ];
 
+/// Returns a legible text/icon color (black or white) to draw on top of
+/// [swatch], based on the swatch's own luminance — independent of the app's
+/// light/dark theme, since these fixed swatch colors don't adapt to it.
+Color onSwatchColor(Color swatch) {
+  return swatch.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+}
+
 /// Shared icon options for todo lists, keyed by the name persisted on
 /// `TodoList.icon`. Used by both the list form's icon picker and
 /// `TodoListItemWidget` when rendering a list's icon.
