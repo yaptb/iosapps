@@ -79,106 +79,128 @@ class _TodoListFormScreenState extends ConsumerState<TodoListFormScreen> {
         title: Text(isEditing ? 'Edit List' : 'New List'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'List Name',
-                hintText: 'e.g., Shopping, Work, Home',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Color',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: todoListColorOptions.map((color) {
-                final isSelected = _selectedColor == color;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedColor = color;
-                    });
-                  },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isSelected ? Colors.black : Colors.transparent,
-                        width: 3,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'List Name',
+                        hintText: 'e.g., Shopping, Work, Home',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Color',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 484),
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: todoListColorOptions.map((color) {
+                            final isSelected = _selectedColor == color;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedColor = color;
+                                });
+                              },
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected ? Colors.black : Colors.transparent,
+                                    width: 3,
+                                  ),
+                                ),
+                                child: isSelected
+                                    ? Icon(Icons.check, color: onSwatchColor(color))
+                                    : null,
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
-                    child: isSelected
-                        ? Icon(Icons.check, color: onSwatchColor(color))
-                        : null,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Icon',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: todoListIconOptions.entries.map((entry) {
-                final isSelected = _selectedIcon == entry.key;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedIcon = entry.key;
-                    });
-                  },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Icon',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
-                    child: Icon(
-                      entry.value,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    const SizedBox(height: 12),
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 484),
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: todoListIconOptions.entries.map((entry) {
+                            final isSelected = _selectedIcon == entry.key;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedIcon = entry.key;
+                                });
+                              },
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  entry.value,
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton(
               onPressed: _saveTodoList,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Text(isEditing ? 'Update List' : 'Create List'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

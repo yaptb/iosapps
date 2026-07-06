@@ -15,12 +15,13 @@ class PermissionsInfoPage extends StatelessWidget {
       padding: const EdgeInsets.all(24.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Title
           Text(
             'Permissions',
             style: Theme.of(context).textTheme.headlineMedium,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
 
@@ -28,15 +29,21 @@ class PermissionsInfoPage extends StatelessWidget {
           Text(
             'To provide the best experience, we need a few permissions:',
             style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
 
           // Permission list
-          _PermissionItem(
-            icon: Icons.notifications_active,
-            title: 'Notifications',
-            description:
-                'Receive reminders for your todos at the right time.',
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: _PermissionItem(
+                icon: Icons.notifications_active,
+                title: 'Notifications',
+                description:
+                    'Receive reminders for your todos at the right time.',
+              ),
+            ),
           ),
           const SizedBox(height: 24),
 

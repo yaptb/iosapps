@@ -19,12 +19,13 @@ class ThemeSelectionPage extends ConsumerWidget {
       padding: const EdgeInsets.all(24.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Title
           Text(
             'Choose Your Look',
             style: Theme.of(context).textTheme.headlineMedium,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
 
@@ -32,6 +33,7 @@ class ThemeSelectionPage extends ConsumerWidget {
           Text(
             'Pick how TodoRedo should look. You can change this anytime in Settings.',
             style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
 

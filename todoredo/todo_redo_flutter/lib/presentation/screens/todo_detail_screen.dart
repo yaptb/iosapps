@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -117,12 +119,40 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
   Future<void> _selectDueDate() async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
+    DateTime tempDate = _dueDate ?? today;
 
-    final date = await showDatePicker(
+    // Use a custom AlertDialog (rather than showDatePicker's built-in
+    // DatePickerDialog, which has its own fixed internal width unaffected
+    // by wrapping) so the due date dialog's width formula matches the
+    // reminder/recurrence dialogs exactly.
+    final date = await showDialog<DateTime>(
       context: context,
-      initialDate: _dueDate ?? today,
-      firstDate: today,
-      lastDate: today.add(const Duration(days: 365 * 5)),
+      builder: (context) => AlertDialog(
+        title: const Text('Select Due Date'),
+        content: SizedBox(
+          width: math.min(MediaQuery.of(context).size.width * 0.7, 480),
+          child: SingleChildScrollView(
+            child: CalendarDatePicker(
+              initialDate: tempDate,
+              firstDate: today,
+              lastDate: today.add(const Duration(days: 365 * 5)),
+              onDateChanged: (picked) {
+                tempDate = picked;
+              },
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, tempDate),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
 
     if (date != null) {
@@ -157,7 +187,9 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
 
           return AlertDialog(
             title: const Text('Set Reminder'),
-            content: SingleChildScrollView(
+            content: SizedBox(
+              width: math.min(MediaQuery.of(context).size.width * 0.7, 480),
+              child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,6 +338,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                   ],
                 ],
               ),
+              ),
             ),
             actions: [
               TextButton(
@@ -342,7 +375,9 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             title: const Text('Set Recurrence'),
-            content: SingleChildScrollView(
+            content: SizedBox(
+              width: math.min(MediaQuery.of(context).size.width * 0.7, 480),
+              child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -411,6 +446,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                     ),
                   ],
                 ],
+              ),
               ),
             ),
             actions: [

@@ -105,29 +105,41 @@ class _NotificationSettingsScreenState
       ),
       body: hasPermission == null
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                SwitchListTile(
-                  title: const Text('Allow Notifications'),
-                  subtitle: Text(
-                    hasPermission
-                        ? 'Reminders can notify you when they\'re due'
-                        : 'Notifications are currently disabled',
-                  ),
-                  value: hasPermission,
-                  onChanged: _handleToggle,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'Reminders need this permission to notify you when a todo is due. '
-                    'If you disable it, scheduled reminders will no longer appear.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          : Center(
+              child: SingleChildScrollView(
+                // Fixed cap rather than a screen-width fraction: keeps the
+                // section a comfortable, consistent reading width on large
+                // screens without affecting phones (where it's already
+                // narrower than the cap) or behaving oddly in landscape.
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SwitchListTile(
+                        title: const Text('Allow Notifications'),
+                        subtitle: Text(
+                          hasPermission
+                              ? 'Reminders can notify you when they\'re due'
+                              : 'Notifications are currently disabled',
                         ),
+                        value: hasPermission,
+                        onChanged: _handleToggle,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          'Reminders need this permission to notify you when a todo is due. '
+                          'If you disable it, scheduled reminders will no longer appear.',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
     );
   }

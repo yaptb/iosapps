@@ -44,19 +44,23 @@ class CompletionPage extends StatelessWidget {
           // TODO: Add feature summary or quick tips here
           // Example: "Tip: Tap the + button to create your first todo"
 
-          const Spacer(),
-
           // Get Started button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onComplete,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: const Text(
-                'Get Started',
-                style: TextStyle(fontSize: 18),
+          // Fixed cap rather than a screen-width fraction: keeps the button
+          // a comfortable, consistent size on large screens without
+          // affecting phones or behaving oddly in landscape.
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: onComplete,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'Get Started',
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
             ),
           ),

@@ -15,27 +15,32 @@ class ThemeSettingsScreen extends ConsumerWidget {
         title: const Text('Theme'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ThemeModeSelector(
-              value: themeMode,
-              onChanged: (mode) {
-                ref.read(themeModeProvider.notifier).setThemeMode(mode);
-              },
-            ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: ThemeModeSelector(
+                  value: themeMode,
+                  onChanged: (mode) {
+                    ref.read(themeModeProvider.notifier).setThemeMode(mode);
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Choose Light, Dark, or System to match your device\'s appearance.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Choose Light, Dark, or System to match your device\'s appearance.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
