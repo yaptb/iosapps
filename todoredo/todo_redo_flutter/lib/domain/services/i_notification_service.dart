@@ -70,4 +70,10 @@ abstract class INotificationService {
   /// Used for diagnostics — comparing this against what the app believes
   /// should be scheduled is how a silent scheduling failure gets caught.
   Future<List<PendingNotificationInfo>> getPendingNotifications();
+
+  /// Set the app's home-screen icon badge count directly, independent of
+  /// showing/scheduling any notification. Best-effort: failures are logged
+  /// but never thrown, since a badge-count mismatch should never block or
+  /// crash anything else in the app.
+  Future<void> setBadgeCount(int count);
 }

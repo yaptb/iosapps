@@ -84,6 +84,23 @@ class ReminderService {
     return reminderTime.isAfter(DateTime.now());
   }
 
+  /// Whether this todo's reminder time has passed while the task is still
+  /// open — i.e. the reminder "fired" (or should have) and hasn't been
+  /// acted on. Time-based rather than relying on notification tap/delivery
+  /// tracking (which the OS doesn't reliably surface when a notification is
+  /// dismissed or simply never seen).
+  bool hasFiredReminder(Todo todo) {
+    if (!todo.reminderEnabled || todo.isCompleted) return false;
+    final reminderTime = calculateReminderTime(
+      todo.dueDate,
+      todo.reminderOffset,
+      todo.reminderUnit,
+      todo.reminderTimeMinutes,
+    );
+    if (reminderTime == null) return false;
+    return reminderTime.isBefore(DateTime.now());
+  }
+
   /// Regenerate reminders for a todo (delete old ones, create new)
   Future<void> regenerateRemindersForTodo(Todo todo) async {
     // Delete all existing reminders for this todo

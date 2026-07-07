@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../../domain/services/i_notification_service.dart';
@@ -10,6 +11,12 @@ import '../../domain/services/i_notification_service.dart';
 class LocalNotificationService implements INotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
+  // flutter_local_notifications has no API to set the app icon badge count
+  // independently of showing/scheduling a notification, so this uses a
+  // small dedicated platform channel handled natively in AppDelegate.swift.
+  static const MethodChannel _badgeChannel =
+      MethodChannel('com.parsecxr.todoredo/badge');
 
   bool _isInitialized = false;
 
@@ -267,6 +274,19 @@ class LocalNotificationService implements INotificationService {
     } catch (e) {
       developer.log('Error fetching pending notifications: $e');
       return [];
+    }
+  }
+
+  @override
+  Future<void> setBadgeCount(int count) async {
+    try {
+      await _badgeChannel.invokeMethod('setBadgeCount', {'count': count});
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error setting badge count',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 

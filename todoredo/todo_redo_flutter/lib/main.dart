@@ -7,6 +7,7 @@ import 'infrastructure/config/theme_mode_controller.dart';
 import 'infrastructure/config/timezone_setup.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/todo_lists_screen.dart';
+import 'presentation/widgets/badge_sync_observer.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -33,16 +34,18 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
 
-    return MaterialApp(
-      title: 'TodoRedo',
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: themeMode,
-      home: const AppInitializer(),
-      routes: {
-        '/home': (context) => const TodoListsScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-      },
+    return BadgeSyncObserver(
+      child: MaterialApp(
+        title: 'TodoRedo',
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: themeMode,
+        home: const AppInitializer(),
+        routes: {
+          '/home': (context) => const TodoListsScreen(),
+          '/onboarding': (context) => const OnboardingScreen(),
+        },
+      ),
     );
   }
 }

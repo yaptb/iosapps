@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/todo.dart';
+import '../../infrastructure/dependency_injection.dart';
 
-class TodoItemWidget extends StatelessWidget {
+class TodoItemWidget extends ConsumerWidget {
   final Todo todo;
   final VoidCallback onTap;
   final VoidCallback onToggle;
@@ -17,7 +19,9 @@ class TodoItemWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasFiredReminder = ref.read(reminderServiceProvider).hasFiredReminder(todo);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
@@ -36,6 +40,15 @@ class TodoItemWidget extends StatelessWidget {
                   color: todo.isCompleted
                       ? Theme.of(context).colorScheme.onSurfaceVariant
                       : Theme.of(context).primaryColor,
+                ),
+              ),
+            if (hasFiredReminder)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Icon(
+                  Icons.notifications_active,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.error,
                 ),
               ),
             Expanded(

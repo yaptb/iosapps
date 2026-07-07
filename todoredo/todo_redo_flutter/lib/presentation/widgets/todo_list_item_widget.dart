@@ -7,6 +7,7 @@ class TodoListItemWidget extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final int firedReminderCount;
 
   const TodoListItemWidget({
     super.key,
@@ -14,6 +15,7 @@ class TodoListItemWidget extends StatelessWidget {
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
+    this.firedReminderCount = 0,
   });
 
   @override
@@ -23,11 +25,15 @@ class TodoListItemWidget extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: listColor.withOpacity(0.2),
-          child: Icon(
-            _getIconData(todoList.icon),
-            color: listColor,
+        leading: Badge.count(
+          count: firedReminderCount,
+          isLabelVisible: firedReminderCount > 0,
+          child: CircleAvatar(
+            backgroundColor: listColor.withOpacity(0.2),
+            child: Icon(
+              _getIconData(todoList.icon),
+              color: listColor,
+            ),
           ),
         ),
         title: Text(
