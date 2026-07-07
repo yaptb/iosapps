@@ -75,9 +75,13 @@ class TodoListsScreen extends ConsumerWidget {
                             reminderService.hasFiredReminder(t),
                       )
                       .length;
+                  final hasOverdueTasks = allTodos.any(
+                    (t) => t.listId == list.id && t.isOverdue,
+                  );
                   return TodoListItemWidget(
                     todoList: list,
                     firedReminderCount: firedReminderCount,
+                    hasOverdueTasks: hasOverdueTasks,
                     onTap: () {
                       Navigator.push(
                         context,

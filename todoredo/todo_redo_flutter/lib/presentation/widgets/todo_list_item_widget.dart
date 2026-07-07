@@ -8,6 +8,7 @@ class TodoListItemWidget extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final int firedReminderCount;
+  final bool hasOverdueTasks;
 
   const TodoListItemWidget({
     super.key,
@@ -16,6 +17,7 @@ class TodoListItemWidget extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     this.firedReminderCount = 0,
+    this.hasOverdueTasks = false,
   });
 
   @override
@@ -36,11 +38,26 @@ class TodoListItemWidget extends StatelessWidget {
             ),
           ),
         ),
-        title: Text(
-          todoList.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
+        title: Row(
+          children: [
+            if (hasOverdueTasks)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Icon(
+                  Icons.event_busy,
+                  size: 16,
+                  color: Colors.amber[800],
+                ),
+              ),
+            Expanded(
+              child: Text(
+                todoList.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {

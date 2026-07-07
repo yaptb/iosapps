@@ -101,6 +101,16 @@ class Todo {
     );
   }
 
+  /// True if this task is past its due date and not yet completed.
+  ///
+  /// Independent of reminders — a task can be overdue with no reminder ever
+  /// configured, or have its reminder fire well before it's actually
+  /// overdue (e.g. "remind me 3 days before this is due").
+  bool get isOverdue {
+    if (isCompleted || dueDate == null) return false;
+    return dueDate!.isBefore(DateTime.now());
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
