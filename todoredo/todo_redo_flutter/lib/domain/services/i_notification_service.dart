@@ -76,4 +76,11 @@ abstract class INotificationService {
   /// but never thrown, since a badge-count mismatch should never block or
   /// crash anything else in the app.
   Future<void> setBadgeCount(int count);
+
+  /// Emits the notification's payload (may be null) each time the user taps
+  /// a notification — including while the app is already in the
+  /// foreground, which doesn't trigger any app-lifecycle transition.
+  /// Listeners use this as an immediate, zero-lag trigger to resync
+  /// anything derived from reminder state, rather than waiting on a poll.
+  Stream<String?> get notificationTapped;
 }

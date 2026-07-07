@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/todo.dart';
 import '../../infrastructure/dependency_injection.dart';
+import 'badge_sync_observer.dart';
 
 class TodoItemWidget extends ConsumerWidget {
   final Todo todo;
@@ -20,6 +21,7 @@ class TodoItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(reminderTickProvider); // periodic rebuild for time-based status
     final hasFiredReminder = ref.read(reminderServiceProvider).hasFiredReminder(todo);
 
     return Card(

@@ -101,14 +101,22 @@ class Todo {
     );
   }
 
-  /// True if this task is past its due date and not yet completed.
+  /// True if this task's due date's calendar day is before today and it's
+  /// not yet completed.
+  ///
+  /// Compares calendar days, not exact instants — due dates are date-only
+  /// in this app (no time-of-day is ever captured for them), so a task due
+  /// "today" should read as due today, not overdue, until the day is over.
   ///
   /// Independent of reminders — a task can be overdue with no reminder ever
   /// configured, or have its reminder fire well before it's actually
   /// overdue (e.g. "remind me 3 days before this is due").
   bool get isOverdue {
     if (isCompleted || dueDate == null) return false;
-    return dueDate!.isBefore(DateTime.now());
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dueDay = DateTime(dueDate!.year, dueDate!.month, dueDate!.day);
+    return dueDay.isBefore(today);
   }
 
   @override

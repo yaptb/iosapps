@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -17,6 +18,11 @@ class LocalNotificationService implements INotificationService {
   // small dedicated platform channel handled natively in AppDelegate.swift.
   static const MethodChannel _badgeChannel =
       MethodChannel('com.parsecxr.todoredo/badge');
+
+  final _notificationTappedController = StreamController<String?>.broadcast();
+
+  @override
+  Stream<String?> get notificationTapped => _notificationTappedController.stream;
 
   bool _isInitialized = false;
 
@@ -305,6 +311,7 @@ class LocalNotificationService implements INotificationService {
     developer.log(
       'Notification tapped: ${response.id}, payload: ${response.payload}',
     );
+    _notificationTappedController.add(response.payload);
     // TODO: Add navigation logic when user taps notification
     // This will be implemented later to navigate to the specific todo detail
   }

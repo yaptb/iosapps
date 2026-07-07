@@ -8,7 +8,8 @@ class TodoListItemWidget extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final int firedReminderCount;
-  final bool hasOverdueTasks;
+  final int openTaskCount;
+  final int overdueTaskCount;
 
   const TodoListItemWidget({
     super.key,
@@ -17,7 +18,8 @@ class TodoListItemWidget extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     this.firedReminderCount = 0,
-    this.hasOverdueTasks = false,
+    this.openTaskCount = 0,
+    this.overdueTaskCount = 0,
   });
 
   @override
@@ -38,27 +40,13 @@ class TodoListItemWidget extends StatelessWidget {
             ),
           ),
         ),
-        title: Row(
-          children: [
-            if (hasOverdueTasks)
-              Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: Icon(
-                  Icons.event_busy,
-                  size: 16,
-                  color: Colors.amber[800],
-                ),
-              ),
-            Expanded(
-              child: Text(
-                todoList.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+        title: Text(
+          todoList.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+          ),
         ),
+        subtitle: _buildSummary(context),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
             switch (value) {
@@ -101,5 +89,27 @@ class TodoListItemWidget extends StatelessWidget {
   IconData _getIconData(String? iconName) {
     if (iconName == null) return Icons.list;
     return todoListIconOptions[iconName] ?? Icons.list;
+  }
+
+  Widget? _buildSummary(BuildContext context) {
+    if (openTaskCount == 0) return null;
+    final taskWord = openTaskCount == 1 ? 'task' : 'tasks';
+    if (overdueTaskCount == 0) {
+      return Text('$openTaskCount $taskWord');
+    }
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: '$openTaskCount $taskWord, '),
+          TextSpan(
+            text: '$overdueTaskCount overdue',
+            style: TextStyle(
+              color: Colors.amber[800],
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

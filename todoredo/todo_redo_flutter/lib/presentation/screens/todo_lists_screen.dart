@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/todo.dart';
 import '../../infrastructure/dependency_injection.dart';
+import '../widgets/badge_sync_observer.dart';
 import '../widgets/todo_list_item_widget.dart';
 import 'settings_screen.dart';
 import 'todo_list_form_screen.dart';
@@ -12,6 +13,7 @@ class TodoListsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(reminderTickProvider); // periodic rebuild for time-based status
     final todoListService = ref.watch(todoListServiceProvider);
     final todoService = ref.watch(todoServiceProvider);
     final reminderService = ref.watch(reminderServiceProvider);
@@ -75,13 +77,17 @@ class TodoListsScreen extends ConsumerWidget {
                             reminderService.hasFiredReminder(t),
                       )
                       .length;
-                  final hasOverdueTasks = allTodos.any(
-                    (t) => t.listId == list.id && t.isOverdue,
-                  );
+                  final openTaskCount = allTodos
+                      .where((t) => t.listId == list.id && !t.isCompleted)
+                      .length;
+                  final overdueTaskCount = allTodos
+                      .where((t) => t.listId == list.id && t.isOverdue)
+                      .length;
                   return TodoListItemWidget(
                     todoList: list,
                     firedReminderCount: firedReminderCount,
-                    hasOverdueTasks: hasOverdueTasks,
+                    openTaskCount: openTaskCount,
+                    overdueTaskCount: overdueTaskCount,
                     onTap: () {
                       Navigator.push(
                         context,
