@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../infrastructure/config/theme_mode_controller.dart';
+import 'diagnostics_screen.dart';
 import 'notification_settings_screen.dart';
 import 'theme_settings_screen.dart';
 
@@ -100,6 +101,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => const NotificationSettingsScreen(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.bug_report),
+          title: const Text('Diagnostics'),
+          subtitle: const Text('Check whether your reminders are actually scheduled'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DiagnosticsScreen(),
               ),
             );
           },

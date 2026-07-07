@@ -1,3 +1,19 @@
+/// A notification currently scheduled with the OS, as reported by the
+/// underlying notification plugin.
+class PendingNotificationInfo {
+  final int id;
+  final String? title;
+  final String? body;
+  final String? payload;
+
+  const PendingNotificationInfo({
+    required this.id,
+    this.title,
+    this.body,
+    this.payload,
+  });
+}
+
 /// Abstract interface for notification services
 ///
 /// Defines the contract for scheduling and managing local notifications.
@@ -6,7 +22,8 @@ abstract class INotificationService {
   /// Initialize the notification service
   ///
   /// Should be called once when the app starts.
-  /// Returns true if initialization successful, false otherwise.
+  /// Returns true on success; throws a descriptive error on failure rather
+  /// than returning false, so callers can surface the real reason.
   Future<bool> initialize();
 
   /// Check if notification permissions are granted
@@ -29,8 +46,9 @@ abstract class INotificationService {
   /// [scheduledDate] - When to show the notification
   /// [payload] - Optional data to pass when notification is tapped
   ///
-  /// Returns true if scheduling successful, false otherwise.
-  /// Will fail if permissions are not granted.
+  /// Returns true on success; throws a descriptive error on failure
+  /// (e.g. permission not granted, or a native scheduling error) rather
+  /// than returning false, so callers can surface the real reason.
   Future<bool> scheduleNotification({
     required int id,
     required String title,
@@ -46,4 +64,10 @@ abstract class INotificationService {
 
   /// Cancel all scheduled notifications
   Future<void> cancelAllNotifications();
+
+  /// List all notifications currently scheduled with the OS.
+  ///
+  /// Used for diagnostics — comparing this against what the app believes
+  /// should be scheduled is how a silent scheduling failure gets caught.
+  Future<List<PendingNotificationInfo>> getPendingNotifications();
 }

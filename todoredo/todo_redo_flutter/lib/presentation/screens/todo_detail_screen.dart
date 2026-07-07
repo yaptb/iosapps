@@ -34,6 +34,12 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
     super.initState();
     _titleController = TextEditingController(text: widget.todo?.title ?? '');
     _descriptionController = TextEditingController(text: widget.todo?.description ?? '');
+    // Rebuild on every keystroke so the unsaved-changes guard (which reads
+    // these controllers' .text directly) stays fresh — otherwise PopScope's
+    // canPop would only reflect whatever it was at the last unrelated
+    // rebuild, not the actual current text.
+    _titleController.addListener(_onFieldChanged);
+    _descriptionController.addListener(_onFieldChanged);
     _dueDate = widget.todo?.dueDate;
     _reminderEnabled = widget.todo?.reminderEnabled ?? false;
     _reminderOffset = widget.todo?.reminderOffset ?? 1;
@@ -46,12 +52,61 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
 
   @override
   void dispose() {
+    _titleController.removeListener(_onFieldChanged);
+    _descriptionController.removeListener(_onFieldChanged);
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
+  void _onFieldChanged() {
+    setState(() {});
+  }
+
   bool get _isEditing => widget.todo != null;
+
+  // Set right before the post-save Navigator.pop() in _saveTodo(), so the
+  // unsaved-changes guard doesn't fire on our own pop right after a
+  // successful save (widget.todo is a stale pre-save snapshot at that point).
+  bool _justSaved = false;
+
+  bool get _hasUnsavedChanges {
+    if (_justSaved) return false;
+    final original = widget.todo;
+    return _titleController.text != (original?.title ?? '') ||
+        _descriptionController.text != (original?.description ?? '') ||
+        _dueDate != original?.dueDate ||
+        _reminderEnabled != (original?.reminderEnabled ?? false) ||
+        _reminderOffset != (original?.reminderOffset ?? 1) ||
+        _reminderUnit != (original?.reminderUnit ?? 'days') ||
+        _reminderTimeMinutes != (original?.reminderTimeMinutes ?? 9 * 60) ||
+        _recurrenceEnabled != (original?.recurrenceEnabled ?? false) ||
+        _recurrenceInterval != (original?.recurrenceInterval ?? 1) ||
+        _recurrenceUnit != (original?.recurrenceUnit ?? 'days');
+  }
+
+  Future<bool> _confirmDiscardChanges() async {
+    final shouldDiscard = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard changes?'),
+        content: const Text(
+          'You have unsaved changes. If you leave now, they will be lost.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Keep Editing'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    return shouldDiscard ?? false;
+  }
 
   Future<void> _saveTodo() async {
     if (_titleController.text.trim().isEmpty) {
@@ -101,6 +156,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
       }
 
       if (mounted) {
+        _justSaved = true;
         Navigator.pop(context);
       }
     } catch (e) {
@@ -562,7 +618,17 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: !_hasUnsavedChanges,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldDiscard = await _confirmDiscardChanges();
+        if (!context.mounted) return;
+        if (shouldDiscard) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Todo' : 'New Todo'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -676,6 +742,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

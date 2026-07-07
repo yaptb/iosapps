@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:uuid/uuid.dart';
 import '../../domain/entities/reminder.dart';
 import '../../domain/entities/todo.dart';
@@ -135,6 +136,8 @@ class ReminderService {
       final title = todo.title.isEmpty ? 'Todo Reminder' : todo.title;
       final body = todo.description ?? 'You have a todo due soon';
 
+      // scheduleNotification() either succeeds or throws (never silently
+      // returns false), so any failure is caught and logged below.
       await _notificationService.scheduleNotification(
         id: notificationId,
         title: title,
@@ -142,9 +145,15 @@ class ReminderService {
         scheduledDate: reminderTime,
         payload: todo.id, // Pass todo ID for potential navigation
       );
-    } catch (e) {
-      // Silently fail - permissions might be denied or service not initialized
-      // Reminder is still saved in database for future use
+    } catch (e, stackTrace) {
+      // Permissions might be denied or service not initialized.
+      // Reminder is still saved in database for future use.
+      developer.log(
+        'Error scheduling notification for todo ${todo.id} '
+        '(reminderTime=$reminderTime)',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 

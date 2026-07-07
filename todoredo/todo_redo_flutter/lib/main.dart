@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'infrastructure/config/app_launch_tracker.dart';
 import 'infrastructure/config/debug_config.dart';
 import 'infrastructure/config/theme_mode_controller.dart';
+import 'infrastructure/config/timezone_setup.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/todo_lists_screen.dart';
 import 'theme/app_theme.dart';
@@ -13,8 +13,9 @@ void main() async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize timezone database for notifications
-  tz.initializeTimeZones();
+  // Load the timezone database and point tz.local at the device's actual
+  // timezone, so reminder notifications schedule at the correct instant.
+  await initializeLocalTimezone();
 
   await AppLaunchTracker.trackLaunchAndMaybeRequestReview();
 
