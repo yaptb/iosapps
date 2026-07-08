@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/onboarding_page_scroll_view.dart';
 
 /// Completion page - Step 4 of onboarding
 ///
@@ -11,60 +12,58 @@ class CompletionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Success icon
-          Icon(
-            Icons.check_circle,
-            size: 120,
-            color: Colors.green,
-          ),
-          const SizedBox(height: 32),
+    return OnboardingPageScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Success icon
+            Icon(Icons.check_circle, size: 120, color: Colors.green),
+            const SizedBox(height: 32),
 
-          // Title
-          Text(
-            'You\'re All Set!',
-            style: Theme.of(context).textTheme.headlineMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
+            // Title
+            Text(
+              'You\'re All Set!',
+              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
 
-          // Description
-          Text(
-            'TodoRedo is ready to go. Start organizing your tasks and never miss a deadline.',
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 48),
+            // Description
+            Text(
+              'TodoRedo is ready to go. Start organizing your tasks and never miss a deadline.',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 48),
 
-          // TODO: Add feature summary or quick tips here
-          // Example: "Tip: Tap the + button to create your first todo"
+            // TODO: Add feature summary or quick tips here
+            // Example: "Tip: Tap the + button to create your first todo"
 
-          // Get Started button
-          // Fixed cap rather than a screen-width fraction: keeps the button
-          // a comfortable, consistent size on large screens without
-          // affecting phones or behaving oddly in landscape.
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onComplete,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(fontSize: 18),
+            // Get Started button
+            // Fixed cap rather than a screen-width fraction: keeps the button
+            // a comfortable, consistent size on large screens without
+            // affecting phones or behaving oddly in landscape.
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onComplete,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Get Started',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

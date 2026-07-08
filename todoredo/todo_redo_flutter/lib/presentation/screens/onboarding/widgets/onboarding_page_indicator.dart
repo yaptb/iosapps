@@ -17,10 +17,7 @@ class OnboardingPageIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        totalPages,
-        (index) => _buildDot(context, index),
-      ),
+      children: List.generate(totalPages, (index) => _buildDot(context, index)),
     );
   }
 
