@@ -108,7 +108,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ListTile(
           leading: const Icon(Icons.bug_report),
           title: const Text('Diagnostics'),
-          subtitle: const Text('Check whether your reminders are actually scheduled'),
+          subtitle: const Text('Check active reminders'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () {
             Navigator.push(

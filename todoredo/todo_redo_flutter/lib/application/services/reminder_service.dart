@@ -101,19 +101,28 @@ class ReminderService {
     return reminderTime.isBefore(DateTime.now());
   }
 
-  /// Regenerate reminders for a todo (delete old ones, create new)
-  Future<void> regenerateRemindersForTodo(Todo todo) async {
+  /// Delete any stored reminder for this todo and cancel its OS
+  /// notification, unconditionally — no new reminder is created regardless
+  /// of the todo's current reminder settings or timing. Used when a task is
+  /// completed, since a completed task should never have a pending
+  /// reminder even if its scheduled time hasn't passed yet.
+  Future<void> cancelRemindersForTodo(String todoId) async {
     // Delete all existing reminders for this todo
-    await _reminderRepository.deleteRemindersByTodoId(todo.id);
+    await _reminderRepository.deleteRemindersByTodoId(todoId);
 
     // Cancel any existing notification for this todo
     // Use todo ID hash as notification ID for consistent cancellation
     try {
-      final notificationId = todo.id.hashCode.abs();
+      final notificationId = todoId.hashCode.abs();
       await _notificationService.cancelNotification(notificationId);
     } catch (e) {
       // Silently fail - notification might not exist or service not initialized
     }
+  }
+
+  /// Regenerate reminders for a todo (delete old ones, create new)
+  Future<void> regenerateRemindersForTodo(Todo todo) async {
+    await cancelRemindersForTodo(todo.id);
 
     // If reminders are disabled, we're done
     if (!todo.reminderEnabled) return;

@@ -56,6 +56,7 @@ class TodoItemWidget extends ConsumerWidget {
             Expanded(
               child: Text(
                 todo.title,
+                textAlign: TextAlign.left,
                 style: TextStyle(
                   decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
                   color: todo.isCompleted
@@ -77,23 +78,35 @@ class TodoItemWidget extends ConsumerWidget {
   }
 
   Widget? _buildSubtitle() {
-    final parts = <String>[];
+    final hasDescription = todo.description != null && todo.description!.isNotEmpty;
+    final hasDueDate = todo.dueDate != null;
+    final hasCompletedAt = todo.isCompleted && todo.completedAt != null;
 
-    if (todo.description != null && todo.description!.isNotEmpty) {
-      parts.add(todo.description!);
-    }
+    if (!hasDescription && !hasDueDate && !hasCompletedAt) return null;
 
-    if (todo.dueDate != null) {
-      final dateStr = DateFormat.yMMMd().format(todo.dueDate!);
-      parts.add('Due: $dateStr');
-    }
-
-    if (parts.isEmpty) return null;
-
-    return Text(
-      parts.join(' • '),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (hasDescription)
+          Text(
+            todo.description!,
+            textAlign: TextAlign.left,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        if (hasDescription && (hasDueDate || hasCompletedAt)) const SizedBox(height: 4),
+        if (hasDueDate)
+          Text(
+            'Due: ${DateFormat.yMMMd().format(todo.dueDate!)}',
+            textAlign: TextAlign.left,
+          ),
+        if (hasCompletedAt)
+          Text(
+            'Completed: ${DateFormat.yMMMd().format(todo.completedAt!)}',
+            textAlign: TextAlign.left,
+          ),
+      ],
     );
   }
 }

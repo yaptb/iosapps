@@ -55,7 +55,11 @@ class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
     final allTodos = await todoService.watchAllTodos().first;
     final pending = await notificationService.getPendingNotifications();
 
-    final activeTodos = allTodos.where((todo) => todo.reminderEnabled).toList();
+    // Completed todos never have an active reminder (cancelled on
+    // completion), so excluding them here avoids a false "Not scheduled on
+    // device" flag for tasks that are correctly done, not broken.
+    final activeTodos =
+        allTodos.where((todo) => todo.reminderEnabled && !todo.isCompleted).toList();
     final matchedPayloads = <String>{};
 
     final diagnostics = <_ReminderDiagnostic>[];

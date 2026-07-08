@@ -75,6 +75,11 @@ class TodoService {
     await _reminderService.regenerateRemindersForTodo(updatedTodo);
   }
 
+  /// Delay between completing a recurring task and creating its next
+  /// instance, so the completion is visually perceptible (checkbox/
+  /// strikethrough) before the replacement task appears in its place.
+  static const _recurrenceCreationDelay = Duration(milliseconds: 500);
+
   /// Toggle the completion status of a todo
   Future<void> toggleTodoCompletion(Todo todo) async {
     final now = DateTime.now();
@@ -87,6 +92,14 @@ class TodoService {
     );
     await _repository.updateTodo(updatedTodo);
 
+    if (isBeingCompleted) {
+      // A completed task should never have a pending reminder, even if its
+      // scheduled time hasn't passed yet.
+      await _reminderService.cancelRemindersForTodo(updatedTodo.id);
+    } else {
+      await _reminderService.regenerateRemindersForTodo(updatedTodo);
+    }
+
     // If task is being completed and has recurrence enabled, create next instance
     if (isBeingCompleted && todo.recurrenceEnabled && todo.dueDate != null) {
       final nextDueDate = _recurrenceService.calculateNextDueDate(
@@ -96,6 +109,8 @@ class TodoService {
       );
 
       if (nextDueDate != null) {
+        await Future.delayed(_recurrenceCreationDelay);
+
         // Create new recurring task
         final newTodo = Todo(
           id: _uuid.v4(),

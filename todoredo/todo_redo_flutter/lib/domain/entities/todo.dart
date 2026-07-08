@@ -51,53 +51,69 @@ class Todo {
     this.deviceId,
   });
 
+  // Sentinel distinguishing "not passed" from "explicitly passed null" for
+  // nullable copyWith params below -- `field ?? this.field` can't tell
+  // those apart, so an explicit null (meant to clear the field) would
+  // silently fall back to the old value instead.
+  static const _unset = Object();
+
   Todo copyWith({
     String? id,
     String? title,
-    String? description,
-    DateTime? dueDate,
+    Object? description = _unset,
+    Object? dueDate = _unset,
     bool? isCompleted,
-    DateTime? completedAt,
+    Object? completedAt = _unset,
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? reminderEnabled,
-    int? reminderOffset,
-    String? reminderUnit,
-    int? reminderTimeMinutes,
+    Object? reminderOffset = _unset,
+    Object? reminderUnit = _unset,
+    Object? reminderTimeMinutes = _unset,
     bool? recurrenceEnabled,
-    int? recurrenceInterval,
-    String? recurrenceUnit,
-    String? listId,
-    String? originalTodoId,
+    Object? recurrenceInterval = _unset,
+    Object? recurrenceUnit = _unset,
+    Object? listId = _unset,
+    Object? originalTodoId = _unset,
     bool? isDeleted,
-    DateTime? deletedAt,
+    Object? deletedAt = _unset,
     bool? needsSync,
-    DateTime? lastSyncedAt,
-    String? deviceId,
+    Object? lastSyncedAt = _unset,
+    Object? deviceId = _unset,
   }) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
-      description: description ?? this.description,
-      dueDate: dueDate ?? this.dueDate,
+      description: identical(description, _unset) ? this.description : description as String?,
+      dueDate: identical(dueDate, _unset) ? this.dueDate : dueDate as DateTime?,
       isCompleted: isCompleted ?? this.isCompleted,
-      completedAt: completedAt ?? this.completedAt,
+      completedAt: identical(completedAt, _unset) ? this.completedAt : completedAt as DateTime?,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       reminderEnabled: reminderEnabled ?? this.reminderEnabled,
-      reminderOffset: reminderOffset ?? this.reminderOffset,
-      reminderUnit: reminderUnit ?? this.reminderUnit,
-      reminderTimeMinutes: reminderTimeMinutes ?? this.reminderTimeMinutes,
+      reminderOffset:
+          identical(reminderOffset, _unset) ? this.reminderOffset : reminderOffset as int?,
+      reminderUnit:
+          identical(reminderUnit, _unset) ? this.reminderUnit : reminderUnit as String?,
+      reminderTimeMinutes: identical(reminderTimeMinutes, _unset)
+          ? this.reminderTimeMinutes
+          : reminderTimeMinutes as int?,
       recurrenceEnabled: recurrenceEnabled ?? this.recurrenceEnabled,
-      recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
-      recurrenceUnit: recurrenceUnit ?? this.recurrenceUnit,
-      listId: listId ?? this.listId,
-      originalTodoId: originalTodoId ?? this.originalTodoId,
+      recurrenceInterval: identical(recurrenceInterval, _unset)
+          ? this.recurrenceInterval
+          : recurrenceInterval as int?,
+      recurrenceUnit:
+          identical(recurrenceUnit, _unset) ? this.recurrenceUnit : recurrenceUnit as String?,
+      listId: identical(listId, _unset) ? this.listId : listId as String?,
+      originalTodoId: identical(originalTodoId, _unset)
+          ? this.originalTodoId
+          : originalTodoId as String?,
       isDeleted: isDeleted ?? this.isDeleted,
-      deletedAt: deletedAt ?? this.deletedAt,
+      deletedAt: identical(deletedAt, _unset) ? this.deletedAt : deletedAt as DateTime?,
       needsSync: needsSync ?? this.needsSync,
-      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
-      deviceId: deviceId ?? this.deviceId,
+      lastSyncedAt:
+          identical(lastSyncedAt, _unset) ? this.lastSyncedAt : lastSyncedAt as DateTime?,
+      deviceId: identical(deviceId, _unset) ? this.deviceId : deviceId as String?,
     );
   }
 

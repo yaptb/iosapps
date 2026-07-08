@@ -21,6 +21,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
   late final TextEditingController _descriptionController;
   DateTime? _dueDate;
   bool _isLoading = false;
+  bool _isCompleted = false;
   bool _reminderEnabled = false;
   int _reminderOffset = 1;
   String _reminderUnit = 'days';
@@ -41,6 +42,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
     _titleController.addListener(_onFieldChanged);
     _descriptionController.addListener(_onFieldChanged);
     _dueDate = widget.todo?.dueDate;
+    _isCompleted = widget.todo?.isCompleted ?? false;
     _reminderEnabled = widget.todo?.reminderEnabled ?? false;
     _reminderOffset = widget.todo?.reminderOffset ?? 1;
     _reminderUnit = widget.todo?.reminderUnit ?? 'days';
@@ -65,6 +67,17 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
 
   bool get _isEditing => widget.todo != null;
 
+  /// The completion date to display at the foot of the screen, reflecting
+  /// the live checkbox state rather than only what's already persisted:
+  /// null (hidden) if currently unchecked; the real persisted date if it
+  /// was already completed and still is; otherwise a preview of what will
+  /// be persisted (today) if the task was just checked this session.
+  DateTime? get _displayedCompletedAt {
+    if (!_isCompleted) return null;
+    if (widget.todo?.isCompleted == true) return widget.todo!.completedAt;
+    return DateTime.now();
+  }
+
   // Set right before the post-save Navigator.pop() in _saveTodo(), so the
   // unsaved-changes guard doesn't fire on our own pop right after a
   // successful save (widget.todo is a stale pre-save snapshot at that point).
@@ -76,6 +89,7 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
     return _titleController.text != (original?.title ?? '') ||
         _descriptionController.text != (original?.description ?? '') ||
         _dueDate != original?.dueDate ||
+        _isCompleted != (original?.isCompleted ?? false) ||
         _reminderEnabled != (original?.reminderEnabled ?? false) ||
         _reminderOffset != (original?.reminderOffset ?? 1) ||
         _reminderUnit != (original?.reminderUnit ?? 'days') ||
@@ -122,7 +136,12 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
       final todoService = ref.read(todoServiceProvider);
 
       if (_isEditing) {
-        final updatedTodo = widget.todo!.copyWith(
+        // Deliberately leaves isCompleted/completedAt untouched here (still
+        // the original values) -- if the checkbox changed, toggleTodoCompletion
+        // below applies that flip on top of these other edits, so its
+        // reminder-cancel/regenerate and recurrence side effects fire
+        // correctly instead of being bypassed by a plain field update.
+        final editedTodo = widget.todo!.copyWith(
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim().isEmpty
               ? null
@@ -136,7 +155,11 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
           recurrenceInterval: _recurrenceInterval,
           recurrenceUnit: _recurrenceUnit,
         );
-        await todoService.updateTodo(updatedTodo);
+        if (_isCompleted != widget.todo!.isCompleted) {
+          await todoService.toggleTodoCompletion(editedTodo);
+        } else {
+          await todoService.updateTodo(editedTodo);
+        }
       } else {
         await todoService.createTodo(
           title: _titleController.text.trim(),
@@ -677,6 +700,23 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
               enabled: !_isLoading,
             ),
             const SizedBox(height: 16),
+            if (_isEditing) ...[
+              Card(
+                child: CheckboxListTile(
+                  value: _isCompleted,
+                  onChanged: _isLoading
+                      ? null
+                      : (value) {
+                          setState(() {
+                            _isCompleted = value ?? false;
+                          });
+                        },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Completed'),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Card(
               child: ListTile(
                 leading: const Icon(Icons.calendar_today),
@@ -708,24 +748,6 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
             Card(
               child: ListTile(
                 leading: Icon(
-                  Icons.notifications,
-                  color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
-                ),
-                title: Text(
-                  'Reminder',
-                  style: TextStyle(
-                    color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
-                  ),
-                ),
-                subtitle: _buildReminderSubtitle(),
-                enabled: _dueDate != null && !_isLoading,
-                onTap: _dueDate == null || _isLoading ? null : _showReminderDialog,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              child: ListTile(
-                leading: Icon(
                   Icons.repeat,
                   color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                 ),
@@ -740,6 +762,35 @@ class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
                 onTap: _dueDate == null || _isLoading ? null : _showRecurrenceDialog,
               ),
             ),
+            const SizedBox(height: 16),
+            Card(
+              child: ListTile(
+                leading: Icon(
+                  Icons.notifications,
+                  color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
+                ),
+                title: Text(
+                  'Reminder',
+                  style: TextStyle(
+                    color: _dueDate == null ? Theme.of(context).colorScheme.onSurfaceVariant : null,
+                  ),
+                ),
+                subtitle: _buildReminderSubtitle(),
+                enabled: _dueDate != null && !_isLoading,
+                onTap: _dueDate == null || _isLoading ? null : _showReminderDialog,
+              ),
+            ),
+            if (_displayedCompletedAt != null) ...[
+              const SizedBox(height: 24),
+              Center(
+                child: Text(
+                  'Completed ${DateFormat.yMMMd().format(_displayedCompletedAt!)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
