@@ -37,6 +37,7 @@ class MyApp extends ConsumerWidget {
     return BadgeSyncObserver(
       child: MaterialApp(
         title: 'TodoRedo',
+        debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: themeMode,
